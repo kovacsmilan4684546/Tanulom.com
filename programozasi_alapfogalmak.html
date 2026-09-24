@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<title>Programozási alapfogalmak – C# és JavaScript</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --panel: #171a23;
+    --panel-border: #262b3a;
+    --text: #e6e8ef;
+    --muted: #9aa1b4;
+    --accent: #7c9eff;
+    --accent2: #6ee7b7; 
+    --csharp: #a855f7;
+    --js: #f5d90a;
+    --code-bg: #0b0d13;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.65;
+  }
+
+  header {
+    padding: 56px 24px 40px;
+    text-align: center;
+    background: radial-gradient(ellipse at top, rgba(124,158,255,0.15), transparent 60%);
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  header h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: 0 0 12px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  header p {
+    color: var(--muted);
+    max-width: 640px;
+    margin: 0 auto;
+    font-size: 1rem;
+  }
+
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 40px 20px 100px;
+  }
+
+  nav.toc {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 48px;
+  }
+
+  nav.toc h2 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  nav.toc ol {
+    columns: 2;
+    padding-left: 20px;
+    margin: 0;
+  }
+
+  nav.toc a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.92rem;
+  }
+
+  nav.toc a:hover { text-decoration: underline; }
+
+  section.concept {
+    margin-bottom: 52px;
+    padding-top: 8px;
+    scroll-margin-top: 20px;
+  }
+
+  section.concept h2 {
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  section.concept h2 .num {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 1rem;
+  }
+
+  .explain {
+    background: var(--panel);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 14px 0 20px;
+    color: #d4d7e2;
+  }
+
+  .explain strong { color: var(--accent2); }
+
+  .code-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  @media (min-width: 720px) {
+    .code-grid.dual { grid-template-columns: 1fr 1fr; }
+  }
+
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .code-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .code-label.cs { color: var(--csharp); border-bottom: 1px solid var(--panel-border); }
+  .code-label.js { color: var(--js); border-bottom: 1px solid var(--panel-border); }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .dot.cs { background: var(--csharp); }
+  .dot.js { background: var(--js); }
+
+  pre {
+    margin: 0;
+    padding: 16px;
+    overflow-x: auto;
+    font-size: 0.88rem;
+  }
+
+  code {
+    font-family: "SF Mono", "Fira Code", Consolas, Menlo, monospace;
+    color: #dbe4ff;
+  }
+
+  .note {
+    font-size: 0.9rem;
+    color: var(--muted);
+    background: rgba(124,158,255,0.06);
+    border: 1px dashed var(--panel-border);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 12px;
+  }
+
+  table.summary {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 0.92rem;
+  }
+
+  table.summary th, table.summary td {
+    border: 1px solid var(--panel-border);
+    padding: 10px 12px;
+    text-align: left;
+  }
+
+  table.summary th {
+    background: var(--panel);
+    color: var(--accent2);
+  }
+
+  table.summary tr:nth-child(even) td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    padding: 30px 20px 60px;
+    font-size: 0.9rem;
+    border-top: 1px solid var(--panel-border);
+  }
+
+  .pillars {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin-top: 12px;
+  }
+
+  .pillar h3 {
+    color: var(--accent2);
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Programozási alapfogalmak</h1>
+  <p>Egy összefoglaló a legfontosabb informatikai/programozási alapfogalmakról, C# és JavaScript kódpéldákkal, a változóktól az objektumorientált programozásig (OOP).</p>
+
+
+<nav class="navbar navbar-expand-lg bg-dark " style="max-width: 25%;margin:auto;">
+  <div class="container-fluid ">
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link  text-light"  href="programozasi_alapfogalmak.html">Alapfogalmak</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-light" href="git_github_utmutato.html">Git / Github</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-light" href="webfejlesztes_alapfogalmak.html">WEB fejlesztes</a>
+        </li>
+       
+      </ul>
+    </div>
+  </div>
+</nav>
+
+</header>
+
+<main>
+
+<nav class="toc">
+  <h2>Tartalom</h2>
+  <ol>
+    <li><a href="#c1">Változó</a></li>
+    <li><a href="#c2">Konstans</a></li>
+    <li><a href="#c3">Adattípusok</a></li>
+    <li><a href="#c4">Operátorok</a></li>
+    <li><a href="#c5">Feltételes elágazás</a></li>
+    <li><a href="#c6">Ciklusok</a></li>
+    <li><a href="#c7">Tömb</a></li>
+    <li><a href="#c8">Függvény / metódus</a></li>
+    <li><a href="#c9">String kezelés</a></li>
+    <li><a href="#c10">Kivételkezelés</a></li>
+    <li><a href="#c11">Objektum</a></li>
+    <li><a href="#c12">Osztály</a></li>
+    <li><a href="#c13">Konstruktor</a></li>
+    <li><a href="#c14">OOP alapelvek</a></li>
+    <li><a href="#c15">Interfész</a></li>
+    <li><a href="#c16">Static tagok</a></li>
+    <li><a href="#summary">Összefoglaló táblázat</a></li>
+  </ol>
+</nav>
+
+<section class="concept" id="c1">
+  <h2><span class="num">1.</span> Változó (variable)</h2>
+  <div class="explain">Egy elnevezett tárolóhely a memóriában, amiben adatot tárolunk. A változónak van neve, <strong>típusa</strong> (bizonyos nyelveknél) és értéke, amit menet közben módosíthatunk.</div>
+  <div class="code-grid dual">
+    <div class="code-block">
+      <div class="code-label cs"><span class="dot cs"></span>C# – statikusan típusos</div>
+      <pre><code>int kor = 25;
+string nev = "Anna";
+kor = 26; // az érték módosítható</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label js"><span class="dot js"></span>JavaScript – dinamikusan típusos</div>
+      <pre><code>let kor = 25;
+let nev = "Anna";
+kor = 26; // az érték módosítható</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="concept" id="c2">
+  <h2><span class="num">2.</span> Konstans (constant)</h2>
+  <div class="explain">Olyan érték, amit egyszer adunk meg, és utána nem lehet megváltoztatni. Akkor használjuk, ha biztosan tudjuk, hogy az érték nem fog változni (pl. PI értéke).</div>
+  <div class="code-grid dual">
+    <div class="code-block">
+      <div class="code-label cs"><span class="dot cs"></span>C#</div>
+      <pre><code>const double PI = 3.14159;</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label js"><span class="dot js"></span>JavaScript</div>
+      <pre><code>const PI = 3.14159;</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="concept" id="c3">
+  <h2><span class="num">3.</span> Adattípusok (data types)</h2>
+  <div class="explain">Meghatározzák, milyen fajta adatot tárolhat egy változó: szám, szöveg, logikai érték stb.</div>
+  <table class="summary">
+    <tr><th>Típus</th><th>Jelentés</th><th>C#</th><th>JavaScript</th></tr>
+    <tr><td>Egész szám</td><td>int</td><td><code>int x = 5;</code></td><td><code>let x = 5;</code></td></tr>
+    <tr><td>Lebegőpontos szám</td><td>tizedes tört</td><td><code>double y = 3.14;</code></td><td><code>let y = 3.14;</code></td></tr>
+    <tr><td>Szöveg</td><td>karaktersorozat</td><td><code>string s = "Szia";</code></td><td><code>let s = "Szia";</code></td></tr>
+    <tr><td>Logikai</td><td>igaz/hamis</td><td><code>bool b = true;</code></td><td><code>let b = true;</code></td></tr>
+    <tr><td>Tömb</td><td>elemek sorozata</td><td><code>int[] t = {1,2,3};</code></td><td><code>let t = [1,2,3];</code></td></tr>
+  </table>
+  <div class="note">JavaScriptben nincs kötelező típusmegadás (dinamikus típusosság), C#-ban viszont a fordító ellenőrzi a típusokat (statikus típusosság).</div>
+</section>
+
+<section class="concept" id="c4">
+  <h2><span class="num">4.</span> Operátorok (operators)</h2>
+  <div class="explain">Jelek/szimbólumok, amelyekkel műveleteket végzünk értékeken: számolás, összehasonlítás, logikai kombinálás.<br>
+  <strong>Aritmetikai:</strong> <code>+ - * / %</code> &nbsp;|&nbsp; <strong>Összehasonlító:</strong> <code>== != &gt; &lt; &gt;= &lt;=</code> &nbsp;|&nbsp; <strong>Logikai:</strong> <code>&& || !</code></div>
+  <div class="code-grid dual">
+    <div class="code-block">
+      <div class="code-label cs"><span class="dot cs"></span>C#</div>
+      <pre><code>int a = 10, b = 3;
+int osszeg = a + b;      // 13
+bool nagyobb = a > b;    // true
+bool esNincs = (a > 5) && (b < 5); // true</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label js"><span class="dot js"></span>JavaScript</div>
+      <pre><code>let a = 10, b = 3;
+let osszeg = a + b;       // 13
+let nagyobb = a > b;      // true
+let esNincs = (a > 5) && (b < 5); // true</code></pre>
+    </div>
+  </div>
+  <div class="note">JavaScriptben van <code>==</code> (laza egyenlőség, típuskonverziót végez) és <code>===</code> (szigorú egyenlőség, típust is vizsgálja). Célszerű mindig <code>===</code>-t használni.</div>
+</section>
+
+<section class="concept" id="c5">
+  <h2><span class="num">5.</span> Feltételes elágazás (if / else, switch)</h2>
+  <div class="explain">Lehetővé teszi, hogy a program bizonyos feltételek alapján más-más kódrészletet hajtson végre.</div>
+  <div class="code-grid dual">
+    <div class="code-block">
+      <div class="code-label cs"><span class="dot cs"></span>C#</div>
+      <pre><code>int eletkor = 17;
+if (eletkor >= 18)
+{
+    Console.WriteLine("Nagykorú");
+}
+else
+{
+    Console.WriteLine("Kiskorú");
+}</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label js"><span class="dot js"></span>JavaScript</div>
+      <pre><code>let eletkor = 17;
+if (eletkor >= 18) {
+    console.log("Nagykorú");
+} else {
+    console.log("Kiskorú");
+}</code></pre>
+    </div>
+  </div>
+  <div class="code-block" style="margin-top:16px;">
+    <div class="code-label cs"><span class="dot cs"></span>switch – C#</div>
+    <pre><code>switch (nap)
+{
+    case 1: Console.WriteLine("Hétfő"); break;
+    case 2: Console.WriteLine("Kedd"); break;
+    default: Console.WriteLine("Ismeretlen nap"); break;
+}</code></pre>
+  </div>
+</section>
+
+<section class="concept" id="c6">
+  <h2><span class="num">6.</span> Ciklusok (loops)</h2>
+  <div class="explain">Kódrészlet ismételt végrehajtása, amíg egy feltétel teljesül, vagy adott számú alkalommal.</div>
+  <div class="code-grid dual">
+    <div class="code-block">
+      <div class="code-label cs"><span class="dot cs"></span>for – C#</div>
+      <pre><code>for (int i = 0; i < 5; i++)
+{
+    Console.WriteLine(i);
+}</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label js"><span class="dot js"></span>for – JavaScript</div>
+      <pre><code>for (let i = 0; i < 5; i++) {
+    console.log(i);
+}</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label cs"><span class="dot cs"></span>while – C#</div>
+      <pre><code>int i = 0;
+while (i < 5)
+{
+    Console.WriteLine(i);
+    i++;
+}</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label js"><span class="dot js"></span>while – JavaScript</div>
+      <pre><code>let i = 0;
+while (i < 5) {
+    console.log(i);
+    i++;
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="concept" id="c7">
+  <h2><span class="num">7.</span> Tömb (array)</h2>
+  <div class="explain">Egyforma típusú (C#-ban kötelezően) elemek rendezett, indexelt gyűjteménye.</div>
+  <div class="code-grid dual">
+    <div class="code-block">
+      <div class="code-label cs"><span class="dot cs"></span>C#</div>
+      <pre><code>int[] szamok = { 1, 2, 3, 4 };
+Console.WriteLine(szamok[0]); // 1</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label js"><span class="dot js"></span>JavaScript</div>
+      <pre><code>let szamok = [1, 2, 3, 4];
+console.log(szamok[0]); // 1</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="concept" id="c8">
+  <h2><span class="num">8.</span> Függvény / metódus (function / method)</h2>
+  <div class="explain">Egy elnevezett, újrafelhasználható kódblokk, amely bemenetet (paramétereket) fogadhat, és visszaadhat egy eredményt. Osztályon belül ezt <strong>metódusnak</strong> nevezzük.</div>
+  <div class="code-grid dual">
+    <div class="code-block">
+      <div class="code-label cs"><span class="dot cs"></span>C#</div>
+      <pre><code>int Osszead(int a, int b)
+{
+    return a + b;
+}
+
+int eredmeny = Osszead(3, 4); // 7</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label js"><span class="dot js"></span>JavaScript</div>
+      <pre><code>function osszead(a, b) {
+    return a + b;
+}
+
+let eredmeny = osszead(3, 4); // 7
+
+// arrow function formában
+const osszead2 = (a, b) => a + b;</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="concept" id="c9">
+  <h2><span class="num">9.</span> String kezelés (szövegek)</h2>
+  <div class="explain">A szöveges adatok (stringek) kezelése: összefűzés, hossz lekérdezés, keresés benne.</div>
+  <div class="code-grid dual">
+    <div class="code-block">
+      <div class="code-label cs"><span class="dot cs"></span>C#</div>
+      <pre><code>string nev = "Anna";
+string koszones = "Szia, " + nev + "!";
+int hossz = nev.Length; // 4</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label js"><span class="dot js"></span>JavaScript</div>
+      <pre><code>let nev = "Anna";
+let koszones = `Szia, ${nev}!`; // template string
+let hossz = nev.length; // 4</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="concept" id="c10">
+  <h2><span class="num">10.</span> Kivételkezelés (try / catch / exception)</h2>
+  <div class="explain">Lehetővé teszi, hogy a program futása közben fellépő hibákat (kivételeket) elkapjuk és lekezeljük, ahelyett hogy a program leállna.</div>
+  <div class="code-grid dual">
+    <div class="code-block">
+      <div class="code-label cs"><span class="dot cs"></span>C#</div>
+      <pre><code>try
+{
+    int x = 10 / 0;
+}
+catch (DivideByZeroException e)
+{
+    Console.WriteLine("Hiba: " + e.Message);
+}</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label js"><span class="dot js"></span>JavaScript</div>
+      <pre><code>try {
+    let x = valamiAmiHibatDob();
+} catch (e) {
+    console.log("Hiba: " + e.message);
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="concept" id="c11">
+  <h2><span class="num">11.</span> Objektum (object)</h2>
+  <div class="explain">Egy adatszerkezet, amely tulajdonságokat (adatokat) és esetleg viselkedést (metódusokat) fog össze. JavaScriptben objektumot típusdefiníció nélkül is létre lehet hozni; C#-ban jellemzően egy osztály "példánya".</div>
+  <div class="code-block">
+    <div class="code-label js"><span class="dot js"></span>JavaScript – objektum literál</div>
+    <pre><code>let szemely = {
+    nev: "Anna",
+    kor: 25,
+    koszon: function() {
+        console.log("Szia, " + this.nev + " vagyok!");
+    }
+};
+szemely.koszon();</code></pre>
+  </div>
+  <div class="note">C#-ban az objektum mindig egy osztályból jön létre (lásd lentebb, 12. pont).</div>
+</section>
+
+<section class="concept" id="c12">
+  <h2><span class="num">12.</span> Osztály (class)</h2>
+  <div class="explain">Egy "sablon" vagy "terv", amely leírja, milyen tulajdonságai (mezők/property-k) és viselkedése (metódusai) lesznek az abból létrehozott objektumoknak (<strong>példányoknak</strong>).</div>
+  <div class="code-grid dual">
+    <div class="code-block">
+      <div class="code-label cs"><span class="dot cs"></span>C#</div>
+      <pre><code>class Szemely
+{
+    public string Nev;
+    public int Kor;
+
+    public void Koszon()
+    {
+        Console.WriteLine("Szia, " + Nev + " vagyok!");
+    }
+}
+
+// Példányosítás
+Szemely anna = new Szemely();
+anna.Nev = "Anna";
+anna.Kor = 25;
+anna.Koszon();</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label js"><span class="dot js"></span>JavaScript (ES6 class)</div>
+      <pre><code>class Szemely {
+    constructor(nev, kor) {
+        this.nev = nev;
+        this.kor = kor;
+    }
+
+    koszon() {
+        console.log("Szia, " + this.nev + " vagyok!");
+    }
+}
+
+let anna = new Szemely("Anna", 25);
+anna.koszon();</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="concept" id="c13">
+  <h2><span class="num">13.</span> Konstruktor (constructor)</h2>
+  <div class="explain">Egy speciális metódus, amely az objektum létrehozásakor (<code>new</code> kulcsszóval) automatikusan lefut, és jellemzően a kezdeti értékek beállítására szolgál.</div>
+  <div class="code-block">
+    <div class="code-label cs"><span class="dot cs"></span>C#</div>
+    <pre><code>class Szemely
+{
+    public string Nev;
+
+    // konstruktor
+    public Szemely(string nev)
+    {
+        Nev = nev;
+    }
+}
+
+Szemely anna = new Szemely("Anna");</code></pre>
+  </div>
+  <div class="note">JavaScriptben lásd a 12. pontban a <code>constructor(...)</code> metódust.</div>
+</section>
+
+<section class="concept" id="c14">
+  <h2><span class="num">14.</span> OOP – Objektumorientált programozás alapelvei</h2>
+  <div class="explain">Az OOP négy fő alappillére: <strong>egységbezárás, öröklődés, polimorfizmus, absztrakció</strong>.</div>
+
+  <div class="pillars">
+
+    <div class="pillar">
+      <h3>a) Egységbezárás / Beágyazás (Encapsulation)</h3>
+      <div class="explain">Az adatok (mezők) és a rájuk vonatkozó műveletek (metódusok) egy egységbe (osztályba) zárása, és a belső adatok hozzáférésének korlátozása (<code>private</code>, <code>public</code>).</div>
+      <div class="code-grid dual">
+        <div class="code-block">
+          <div class="code-label cs"><span class="dot cs"></span>C#</div>
+          <pre><code>class BankSzamla
+{
+    private double egyenleg;
+
+    public void Befizetes(double osszeg)
+    {
+        egyenleg += osszeg;
+    }
+
+    public double LekerdezEgyenleg()
+    {
+        return egyenleg;
+    }
+}</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-label js"><span class="dot js"></span>JavaScript (privát mező, ES2022+)</div>
+          <pre><code>class BankSzamla {
+    #egyenleg = 0;
+
+    befizetes(osszeg) {
+        this.#egyenleg += osszeg;
+    }
+
+    lekerdezEgyenleg() {
+        return this.#egyenleg;
+    }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="pillar">
+      <h3>b) Öröklődés (Inheritance)</h3>
+      <div class="explain">Egy osztály (leszármazott) átveheti egy másik osztály (szülő) tulajdonságait és metódusait, és bővítheti vagy felülírhatja azokat.</div>
+      <div class="code-grid dual">
+        <div class="code-block">
+          <div class="code-label cs"><span class="dot cs"></span>C# – öröklődés a ":" jellel</div>
+          <pre><code>class Allat
+{
+    public void EszikVeg()
+    {
+        Console.WriteLine("Az állat eszik.");
+    }
+}
+
+class Kutya : Allat
+{
+    public void Ugat()
+    {
+        Console.WriteLine("Vau vau!");
+    }
+}
+
+Kutya bodri = new Kutya();
+bodri.EszikVeg();
+bodri.Ugat();</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-label js"><span class="dot js"></span>JavaScript – "extends" kulcsszó</div>
+          <pre><code>class Allat {
+    eszik() {
+        console.log("Az állat eszik.");
+    }
+}
+
+class Kutya extends Allat {
+    ugat() {
+        console.log("Vau vau!");
+    }
+}
+
+let bodri = new Kutya();
+bodri.eszik();
+bodri.ugat();</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="pillar">
+      <h3>c) Polimorfizmus (Polymorphism)</h3>
+      <div class="explain">Különböző osztályok ugyanazt a metódusnevet másképp valósíthatják meg – a program futás közben eldönti, melyik változatot hívja.</div>
+      <div class="code-grid dual">
+        <div class="code-block">
+          <div class="code-label cs"><span class="dot cs"></span>C# – virtual / override</div>
+          <pre><code>class Allat
+{
+    public virtual void HangotAd()
+    {
+        Console.WriteLine("Az állat hangot ad.");
+    }
+}
+
+class Kutya : Allat
+{
+    public override void HangotAd()
+    {
+        Console.WriteLine("Vau!");
+    }
+}
+
+class Macska : Allat
+{
+    public override void HangotAd()
+    {
+        Console.WriteLine("Miáú!");
+    }
+}</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-label js"><span class="dot js"></span>JavaScript</div>
+          <pre><code>class Allat {
+    hangotAd() {
+        console.log("Az állat hangot ad.");
+    }
+}
+
+class Kutya extends Allat {
+    hangotAd() {
+        console.log("Vau!");
+    }
+}
+
+class Macska extends Allat {
+    hangotAd() {
+        console.log("Miáú!");
+    }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="pillar">
+      <h3>d) Absztrakció (Abstraction)</h3>
+      <div class="explain">A lényegtelen részletek elrejtése, és csak a lényeges, "kifelé mutatott" viselkedés megjelenítése. Gyakran absztrakt osztályokkal vagy interfészekkel valósítjuk meg.</div>
+      <div class="code-grid dual">
+        <div class="code-block">
+          <div class="code-label cs"><span class="dot cs"></span>C# – abstract osztály</div>
+          <pre><code>abstract class Alakzat
+{
+    public abstract double Terulet();
+}
+
+class Kor : Alakzat
+{
+    public double Sugar;
+    public override double Terulet()
+    {
+        return Math.PI * Sugar * Sugar;
+    }
+}</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-label js"><span class="dot js"></span>JavaScript – hibadobással szimulálva</div>
+          <pre><code>class Alakzat {
+    terulet() {
+        throw new Error("A terulet() metódust felül kell írni!");
+    }
+}
+
+class Kor extends Alakzat {
+    constructor(sugar) {
+        super();
+        this.sugar = sugar;
+    }
+    terulet() {
+        return Math.PI * this.sugar * this.sugar;
+    }
+}</code></pre>
+        </div>
+      </div>
+      <div class="note">JavaScriptben nincs beépített <code>abstract</code> kulcsszó, ezért a hasonló hatást hibadobással szimuláljuk a szülő metódusban.</div>
+    </div>
+
+  </div>
+</section>
+
+<section class="concept" id="c15">
+  <h2><span class="num">15.</span> Interfész (interface)</h2>
+  <div class="explain">Egy "szerződés", amely megmondja, milyen metódusokat kell megvalósítania egy osztálynak, de az implementációt nem tartalmazza. C#-ban ez nyelvi elem, JavaScriptben nincs beépítve, de a koncepció hasonló mintákkal ("duck typing") kiváltható.</div>
+  <div class="code-block">
+    <div class="code-label cs"><span class="dot cs"></span>C#</div>
+    <pre><code>interface IJarmu
+{
+    void Indit();
+}
+
+class Auto : IJarmu
+{
+    public void Indit()
+    {
+        Console.WriteLine("Az autó elindult.");
+    }
+}</code></pre>
+  </div>
+</section>
+
+<section class="concept" id="c16">
+  <h2><span class="num">16.</span> Statikus tagok (static)</h2>
+  <div class="explain">Olyan mező vagy metódus, amely nem egy konkrét példányhoz, hanem magához az osztályhoz tartozik – nem kell hozzá objektumot létrehozni.</div>
+  <div class="code-grid dual">
+    <div class="code-block">
+      <div class="code-label cs"><span class="dot cs"></span>C#</div>
+      <pre><code>class Matek
+{
+    public static int Negyzet(int x)
+    {
+        return x * x;
+    }
+}
+
+int eredmeny = Matek.Negyzet(5); // nincs "new Matek()"</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-label js"><span class="dot js"></span>JavaScript</div>
+      <pre><code>class Matek {
+    static negyzet(x) {
+        return x * x;
+    }
+}
+
+let eredmeny = Matek.negyzet(5); // nincs "new Matek()"</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="concept" id="summary">
+  <h2>Összefoglaló táblázat</h2>
+  <table class="summary">
+    <tr><th>#</th><th>Fogalom</th><th>Miért fontos?</th></tr>
+    <tr><td>1</td><td>Változó</td><td>Adatok tárolása</td></tr>
+    <tr><td>2</td><td>Konstans</td><td>Nem változó érték rögzítése</td></tr>
+    <tr><td>3</td><td>Adattípus</td><td>Milyen fajta adatot tárolunk</td></tr>
+    <tr><td>4</td><td>Operátor</td><td>Műveletek végzése</td></tr>
+    <tr><td>5</td><td>Feltétel (if/switch)</td><td>Döntéshozatal a kódban</td></tr>
+    <tr><td>6</td><td>Ciklus</td><td>Ismétlődő műveletek</td></tr>
+    <tr><td>7</td><td>Tömb</td><td>Több érték egy változóban</td></tr>
+    <tr><td>8</td><td>Függvény/metódus</td><td>Újrafelhasználható kódblokk</td></tr>
+    <tr><td>9</td><td>String kezelés</td><td>Szöveges adatok kezelése</td></tr>
+    <tr><td>10</td><td>Kivételkezelés</td><td>Hibák biztonságos kezelése</td></tr>
+    <tr><td>11</td><td>Objektum</td><td>Adat + viselkedés egy egységben</td></tr>
+    <tr><td>12</td><td>Osztály</td><td>Objektumok "sablonja"</td></tr>
+    <tr><td>13</td><td>Konstruktor</td><td>Objektum kezdeti beállítása</td></tr>
+    <tr><td>14</td><td>OOP alapelvek</td><td>Encapsulation, Inheritance, Polymorphism, Abstraction</td></tr>
+    <tr><td>15</td><td>Interfész</td><td>Metódus-szerződés osztályok között</td></tr>
+    <tr><td>16</td><td>Static</td><td>Osztályhoz kötött, példány nélküli tag</td></tr>
+  </table>
+</section>
+
+</main>
+
+<footer>
+  Programozási alapfogalmak – C# és JavaScript összehasonlítás
+</footer>
+
+</body>
+</html>

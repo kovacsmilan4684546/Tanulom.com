@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<title>Webfejlesztési alapfogalmak - Node, API, ER/UML, GitHub, Trello</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --panel: #171a23;
+    --panel-border: #262b3a;
+    --text: #e6e8ef;
+    --muted: #9aa1b4; 
+    --accent: #7c9eff;
+    --accent2: #6ee7b7;
+    --warn: #f5a623;
+    --pink: #f472b6;
+    --code-bg: #0b0d13;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.65;
+  }
+
+  header {
+    padding: 56px 24px 40px;
+    text-align: center;
+    background: radial-gradient(ellipse at top, rgba(124,158,255,0.15), transparent 60%);
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  header h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: 0 0 12px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  header p {
+    color: var(--muted);
+    max-width: 680px;
+    margin: 0 auto;
+    font-size: 1rem;
+  }
+
+  main {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 40px 20px 100px;
+  }
+
+  nav.toc {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 48px;
+  }
+
+  nav.toc h2 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  nav.toc ol {
+    columns: 2;
+    padding-left: 20px;
+    margin: 0;
+  }
+
+  nav.toc a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.92rem;
+  }
+
+  nav.toc a:hover { text-decoration: underline; }
+
+  section.concept {
+    margin-bottom: 52px;
+    padding-top: 8px;
+    scroll-margin-top: 20px;
+  }
+
+  section.concept h2 {
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  section.concept h2 .num {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 1rem;
+  }
+
+  .explain {
+    background: var(--panel);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 14px 0 20px;
+    color: #d4d7e2;
+  }
+
+  .explain strong { color: var(--accent2); }
+
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 12px;
+  }
+
+  .code-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--panel-border);
+    color: var(--accent2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  pre {
+    margin: 0;
+    padding: 16px;
+    overflow-x: auto;
+    font-size: 0.86rem;
+  }
+
+  code {
+    font-family: "SF Mono", "Fira Code", Consolas, Menlo, monospace;
+    color: #dbe4ff;
+  }
+
+  .note {
+    font-size: 0.9rem;
+    color: var(--muted);
+    background: rgba(124,158,255,0.06);
+    border: 1px dashed var(--panel-border);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 12px;
+  }
+
+  .warn {
+    font-size: 0.9rem;
+    color: #ffd9a8;
+    background: rgba(245,166,35,0.08);
+    border: 1px dashed var(--warn);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 12px;
+  }
+
+  table.summary {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 0.92rem;
+  }
+
+  table.summary th, table.summary td {
+    border: 1px solid var(--panel-border);
+    padding: 10px 12px;
+    text-align: left;
+  }
+
+  table.summary th {
+    background: var(--panel);
+    color: var(--accent2);
+  }
+
+  table.summary tr:nth-child(even) td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .diagram-wrap {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 16px;
+    overflow-x: auto;
+  }
+
+  .diagram-wrap svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+
+  .steps {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .step {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .step .badge {
+    background: var(--accent);
+    color: #0f1117;
+    font-weight: 700;
+    font-size: 0.8rem;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .tree {
+    font-family: "SF Mono", "Fira Code", Consolas, Menlo, monospace;
+    font-size: 0.86rem;
+    background: var(--code-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    line-height: 1.9;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .tree .folder { color: var(--accent); font-weight: 600; }
+  .tree .file { color: var(--accent2); }
+  .tree .comment { color: var(--muted); }
+  .tree .env { color: var(--warn); font-weight: 700; }
+
+  .arch-legend {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  @media (min-width: 700px) {
+    .arch-legend { grid-template-columns: 1fr 1fr; }
+  }
+
+  .arch-item {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-left: 3px solid var(--accent2);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+
+  .arch-item code { color: var(--accent2); }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    padding: 30px 20px 60px;
+    font-size: 0.9rem;
+    border-top: 1px solid var(--panel-border);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Webfejlesztés alapfogalmai</h1>
+  <p>Kliens-szerver modell, Node.js, adatbázis-kapcsolatok, wireframe, ER/UML modellezés, GitHub, Trello, .env fájlok, jó backend logika — és a végén egy teljes projekt-felépítési ábra, hogy mi hová kerül.</p>
+
+
+<nav class="navbar navbar-expand-lg bg-dark  "style="max-width: 25%;margin:auto;">
+  <div class="container-fluid ">
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link  text-light"  href="programozasi_alapfogalmak.html">Alapfogalmak</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-light" href="git_github_utmutato.html">Git / Github</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-light" href="webfejlesztes_alapfogalmak.html">WEB fejlesztes</a>
+        </li>
+       
+      </ul>
+    </div>
+  </div>
+</nav>
+
+</header>
+
+<main>
+
+<nav class="toc">
+  <h2>Tartalom</h2>
+  <ol>
+    <li><a href="#c1">Kliens-szerver modell</a></li>
+    <li><a href="#c2">Weboldal felépítése (frontend rétegek)</a></li>
+    <li><a href="#c3">Node.js és a szerver oldal</a></li>
+    <li><a href="#c4">API és kérés-válasz kapcsolat</a></li>
+    <li><a href="#c5">Adatbázis-kapcsolat</a></li>
+    <li><a href="#c6">Wireframe</a></li>
+    <li><a href="#c7">ER modell</a></li>
+    <li><a href="#c8">UML modell</a></li>
+    <li><a href="#c9">Git és GitHub</a></li>
+    <li><a href="#c10">Trello / projektmenedzsment</a></li>
+    <li><a href="#c11">.env fájl</a></li>
+    <li><a href="#c12">Jó backend logika</a></li>
+    <li><a href="#arch">Projekt-felépítési ábra</a></li>
+  </ol>
+</nav>
+
+<!-- 1. KLIENS-SZERVER -->
+<section class="concept" id="c1">
+  <h2><span class="num">1.</span> Kliens-szerver modell (client-server)</h2>
+  <div class="explain">Minden weboldal működésének alapja: a <strong>kliens</strong> (böngésző) kéréseket küld, a <strong>szerver</strong> (a háttérben futó program) ezeket feldolgozza, és választ (adatot, HTML-t, JSON-t) küld vissza.</div>
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 700 180" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="60" width="160" height="60" rx="10" fill="#171a23" stroke="#7c9eff" stroke-width="2"/>
+      <text x="100" y="85" text-anchor="middle" fill="#e6e8ef" font-size="14" font-family="sans-serif">Kliens</text>
+      <text x="100" y="103" text-anchor="middle" fill="#9aa1b4" font-size="11" font-family="sans-serif">(böngésző)</text>
+
+      <rect x="520" y="60" width="160" height="60" rx="10" fill="#171a23" stroke="#6ee7b7" stroke-width="2"/>
+      <text x="600" y="85" text-anchor="middle" fill="#e6e8ef" font-size="14" font-family="sans-serif">Szerver</text>
+      <text x="600" y="103" text-anchor="middle" fill="#9aa1b4" font-size="11" font-family="sans-serif">(Node.js)</text>
+
+      <line x1="180" y1="75" x2="518" y2="75" stroke="#7c9eff" stroke-width="2" marker-end="url(#arrow1)"/>
+      <text x="350" y="65" text-anchor="middle" fill="#7c9eff" font-size="11" font-family="sans-serif">HTTP kérés (request)</text>
+
+      <line x1="518" y1="105" x2="180" y2="105" stroke="#6ee7b7" stroke-width="2" marker-end="url(#arrow2)"/>
+      <text x="350" y="125" text-anchor="middle" fill="#6ee7b7" font-size="11" font-family="sans-serif">válasz (response: HTML/JSON)</text>
+
+      <rect x="290" y="10" width="120" height="35" rx="8" fill="#0b0d13" stroke="#262b3a"/>
+      <text x="350" y="32" text-anchor="middle" fill="#f472b6" font-size="11" font-family="sans-serif">Internet</text>
+
+      <defs>
+        <marker id="arrow1" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#7c9eff"/></marker>
+        <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#6ee7b7"/></marker>
+      </defs>
+    </svg>
+  </div>
+  <div class="note">A <strong>frontend</strong> a kliens oldalán fut (amit a felhasználó lát: HTML, CSS, JS a böngészőben), a <strong>backend</strong> a szerveren fut (adatfeldolgozás, adatbázis-kezelés, üzleti logika).</div>
+</section>
+
+<!-- 2. WEBOLDAL FELÉPÍTÉSE -->
+<section class="concept" id="c2">
+  <h2><span class="num">2.</span> Weboldal felépítése (frontend rétegek)</h2>
+  <div class="explain">Egy weboldal háromféle technológiát kombinál: a <strong>HTML</strong> adja a tartalmat és szerkezetet, a <strong>CSS</strong> a kinézetet (stílust), a <strong>JavaScript</strong> pedig az interaktivitást (dinamikus viselkedést).</div>
+  <table class="summary">
+    <tr><th>Réteg</th><th>Feladata</th><th>Példa</th></tr>
+    <tr><td>HTML</td><td>Struktúra, tartalom</td><td><code>&lt;h1&gt;, &lt;p&gt;, &lt;div&gt;</code></td></tr>
+    <tr><td>CSS</td><td>Megjelenés, elrendezés</td><td>színek, betűtípus, flexbox/grid</td></tr>
+    <tr><td>JavaScript</td><td>Viselkedés, interakció</td><td>gombra kattintás, form validáció, API hívás</td></tr>
+  </table>
+  <div class="code-block">
+    <div class="code-label">Egyszerű JS API-hívás a böngészőből (frontend)</div>
+    <pre><code>fetch("/api/felhasznalok")
+  .then(response => response.json())
+  .then(data => console.log(data));</code></pre>
+  </div>
+</section>
+
+<!-- 3. NODE.JS -->
+<section class="concept" id="c3">
+  <h2><span class="num">3.</span> Node.js és a szerver oldal</h2>
+  <div class="explain">A <strong>Node.js</strong> egy futtatókörnyezet, amivel JavaScriptet nem csak a böngészőben, hanem szerver oldalon is futtathatunk. Ezzel írhatunk olyan programot, ami fogadja a kliens kéréseit, adatbázissal kommunikál, és választ küld vissza.</div>
+  <div class="code-block">
+    <div class="code-label">Egyszerű Node.js szerver (Express keretrendszerrel)</div>
+    <pre><code>const express = require("express");
+const app = express();
+
+app.get("/api/felhasznalok", (req, res) => {
+    res.json([{ id: 1, nev: "Anna" }]);
+});
+
+app.listen(3000, () => {
+    console.log("A szerver fut a 3000-es porton");
+});</code></pre>
+  </div>
+  <div class="note"><strong>Express</strong> a legelterjedtebb Node.js keretrendszer (framework), ami leegyszerűsíti az útvonalak (route-ok), middleware-ek és API-k kezelését.</div>
+</section>
+
+<!-- 4. API -->
+<section class="concept" id="c4">
+  <h2><span class="num">4.</span> API és kérés-válasz kapcsolat</h2>
+  <div class="explain">Az <strong>API</strong> (Application Programming Interface) egy "szabályrendszer", amivel a frontend és a backend (vagy két különböző rendszer) kommunikálhat egymással. A leggyakoribb típus a <strong>REST API</strong>, amely HTTP metódusokat használ.</div>
+  <table class="summary">
+    <tr><th>HTTP metódus</th><th>Mire való</th></tr>
+    <tr><td><code>GET</code></td><td>Adat lekérdezése</td></tr>
+    <tr><td><code>POST</code></td><td>Új adat létrehozása</td></tr>
+    <tr><td><code>PUT / PATCH</code></td><td>Meglévő adat módosítása</td></tr>
+    <tr><td><code>DELETE</code></td><td>Adat törlése</td></tr>
+  </table>
+  <div class="code-block">
+    <div class="code-label">Példa: CRUD végpontok Express-ben</div>
+    <pre><code>app.get("/api/termekek", getOsszesTermek);      // lekérdezés
+app.post("/api/termekek", ujTermekLetrehozasa);  // létrehozás
+app.put("/api/termekek/:id", termekModositas);   // módosítás
+app.delete("/api/termekek/:id", termekTorles);   // törlés</code></pre>
+  </div>
+</section>
+
+<!-- 5. ADATBÁZIS KAPCSOLAT -->
+<section class="concept" id="c5">
+  <h2><span class="num">5.</span> Adatbázis-kapcsolat</h2>
+  <div class="explain">A backend jellemzően egy adatbázishoz (pl. MySQL, PostgreSQL, MongoDB) csatlakozik, hogy tartósan tárolja és lekérdezze az adatokat. A kapcsolathoz kapcsolati adatokra (host, felhasználónév, jelszó, adatbázisnév) van szükség — ezeket <strong>soha nem</strong> írjuk a kódba közvetlenül, hanem <code>.env</code> fájlban tároljuk (lásd 11. pont).</div>
+  <div class="code-block">
+    <div class="code-label">Adatbázis-kapcsolat Node.js-ben (MongoDB példa)</div>
+    <pre><code>const mongoose = require("mongoose");
+
+mongoose.connect(process.env.DATABASE_URL)
+  .then(() => console.log("Adatbázis kapcsolódva"))
+  .catch(err => console.error("Kapcsolódási hiba:", err));</code></pre>
+  </div>
+</section>
+
+<!-- 6. WIREFRAME -->
+<section class="concept" id="c6">
+  <h2><span class="num">6.</span> Wireframe</h2>
+  <div class="explain">A <strong>wireframe</strong> egy egyszerű, "drótváz"-szerű vázlat egy weboldal vagy alkalmazás elrendezéséről, még mielőtt a tényleges design vagy kódolás elkezdődne. Célja, hogy gyorsan megtervezzük, mi hova kerül (fejléc, navigáció, tartalom, lábléc), design elemek (színek, betűtípus) nélkül.</div>
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 600 380" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="580" height="360" rx="8" fill="none" stroke="#262b3a" stroke-width="2"/>
+      <!-- header -->
+      <rect x="25" y="25" width="550" height="50" rx="4" fill="#171a23" stroke="#7c9eff"/>
+      <text x="300" y="55" text-anchor="middle" fill="#7c9eff" font-size="13" font-family="sans-serif">FEJLÉC / NAVIGÁCIÓ</text>
+      <!-- hero -->
+      <rect x="25" y="90" width="550" height="70" rx="4" fill="#171a23" stroke="#6ee7b7"/>
+      <text x="300" y="130" text-anchor="middle" fill="#6ee7b7" font-size="13" font-family="sans-serif">FŐ TARTALOM / HERO SZEKCIÓ</text>
+      <!-- content columns -->
+      <rect x="25" y="175" width="175" height="120" rx="4" fill="#171a23" stroke="#f472b6"/>
+      <text x="112" y="238" text-anchor="middle" fill="#f472b6" font-size="12" font-family="sans-serif">Tartalom</text>
+      <rect x="212" y="175" width="175" height="120" rx="4" fill="#171a23" stroke="#f472b6"/>
+      <text x="300" y="238" text-anchor="middle" fill="#f472b6" font-size="12" font-family="sans-serif">Tartalom</text>
+      <rect x="400" y="175" width="175" height="120" rx="4" fill="#171a23" stroke="#f472b6"/>
+      <text x="487" y="238" text-anchor="middle" fill="#f472b6" font-size="12" font-family="sans-serif">Tartalom</text>
+      <!-- footer -->
+      <rect x="25" y="310" width="550" height="45" rx="4" fill="#171a23" stroke="#f5a623"/>
+      <text x="300" y="337" text-anchor="middle" fill="#f5a623" font-size="13" font-family="sans-serif">LÁBLÉC (footer)</text>
+    </svg>
+  </div>
+  <div class="note">Wireframe-eket gyakran olyan eszközökkel készítenek, mint a Figma, Balsamiq vagy akár papír-ceruza.</div>
+</section>
+
+<!-- 7. ER MODELL -->
+<section class="concept" id="c7">
+  <h2><span class="num">7.</span> ER modell (Entity-Relationship diagram)</h2>
+  <div class="explain">Az <strong>ER-modell</strong> azt mutatja be, hogyan épül fel az adatbázis: milyen <strong>entitások</strong> (táblák, pl. Felhasználó, Rendelés) vannak, milyen <strong>attribútumaik</strong> (mezőik) vannak, és milyen <strong>kapcsolatban</strong> állnak egymással (pl. egy felhasználónak több rendelése lehet).</div>
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="30" width="200" height="150" rx="6" fill="#171a23" stroke="#7c9eff" stroke-width="2"/>
+      <rect x="20" y="30" width="200" height="34" rx="6" fill="#7c9eff"/>
+      <text x="120" y="53" text-anchor="middle" fill="#0f1117" font-size="13" font-weight="bold" font-family="sans-serif">Felhasznalo</text>
+      <text x="35" y="88" fill="#e6e8ef" font-size="12" font-family="sans-serif">PK id</text>
+      <text x="35" y="110" fill="#e6e8ef" font-size="12" font-family="sans-serif">nev</text>
+      <text x="35" y="132" fill="#e6e8ef" font-size="12" font-family="sans-serif">email</text>
+      <text x="35" y="154" fill="#e6e8ef" font-size="12" font-family="sans-serif">jelszo_hash</text>
+
+      <rect x="420" y="30" width="200" height="150" rx="6" fill="#171a23" stroke="#6ee7b7" stroke-width="2"/>
+      <rect x="420" y="30" width="200" height="34" rx="6" fill="#6ee7b7"/>
+      <text x="520" y="53" text-anchor="middle" fill="#0f1117" font-size="13" font-weight="bold" font-family="sans-serif">Rendeles</text>
+      <text x="435" y="88" fill="#e6e8ef" font-size="12" font-family="sans-serif">PK id</text>
+      <text x="435" y="110" fill="#e6e8ef" font-size="12" font-family="sans-serif">FK felhasznalo_id</text>
+      <text x="435" y="132" fill="#e6e8ef" font-size="12" font-family="sans-serif">datum</text>
+      <text x="435" y="154" fill="#e6e8ef" font-size="12" font-family="sans-serif">osszeg</text>
+
+      <line x1="220" y1="105" x2="420" y2="105" stroke="#f472b6" stroke-width="2"/>
+      <text x="245" y="98" fill="#f472b6" font-size="12" font-family="sans-serif">1</text>
+      <text x="395" y="98" fill="#f472b6" font-size="12" font-family="sans-serif">N</text>
+      <text x="320" y="200" text-anchor="middle" fill="#9aa1b4" font-size="11" font-family="sans-serif">egy felhasználónak több rendelése lehet (1:N kapcsolat)</text>
+    </svg>
+  </div>
+  <div class="note"><code>PK</code> = elsődleges kulcs (Primary Key, egyedi azonosító), <code>FK</code> = idegen kulcs (Foreign Key, egy másik táblára mutat).</div>
+</section>
+
+<!-- 8. UML -->
+<section class="concept" id="c8">
+  <h2><span class="num">8.</span> UML modell</h2>
+  <div class="explain">Az <strong>UML</strong> (Unified Modeling Language) egy szabványos vizuális nyelv a szoftver felépítésének leírására. Legelterjedtebb formája az <strong>osztálydiagram</strong> (class diagram), amely az OOP osztályokat, azok tulajdonságait, metódusait, és a köztük lévő kapcsolatokat (öröklődés, asszociáció) mutatja.</div>
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg">
+      <rect x="230" y="20" width="180" height="110" rx="6" fill="#171a23" stroke="#7c9eff" stroke-width="2"/>
+      <text x="320" y="40" text-anchor="middle" fill="#7c9eff" font-size="13" font-weight="bold" font-family="sans-serif">Felhasznalo</text>
+      <line x1="230" y1="48" x2="410" y2="48" stroke="#262b3a"/>
+      <text x="240" y="66" fill="#e6e8ef" font-size="11" font-family="sans-serif">- nev: string</text>
+      <text x="240" y="84" fill="#e6e8ef" font-size="11" font-family="sans-serif">- email: string</text>
+      <line x1="230" y1="92" x2="410" y2="92" stroke="#262b3a"/>
+      <text x="240" y="110" fill="#e6e8ef" font-size="11" font-family="sans-serif">+ bejelentkezik()</text>
+
+      <rect x="30" y="180" width="180" height="80" rx="6" fill="#171a23" stroke="#6ee7b7" stroke-width="2"/>
+      <text x="120" y="200" text-anchor="middle" fill="#6ee7b7" font-size="13" font-weight="bold" font-family="sans-serif">Admin</text>
+      <line x1="30" y1="208" x2="210" y2="208" stroke="#262b3a"/>
+      <text x="40" y="228" fill="#e6e8ef" font-size="11" font-family="sans-serif">+ felhasznaloTorol()</text>
+
+      <rect x="430" y="180" width="180" height="80" rx="6" fill="#171a23" stroke="#f472b6" stroke-width="2"/>
+      <text x="520" y="200" text-anchor="middle" fill="#f472b6" font-size="13" font-weight="bold" font-family="sans-serif">Vasarlo</text>
+      <line x1="430" y1="208" x2="610" y2="208" stroke="#262b3a"/>
+      <text x="440" y="228" fill="#e6e8ef" font-size="11" font-family="sans-serif">+ kosarbaTesz()</text>
+
+      <line x1="320" y1="130" x2="120" y2="180" stroke="#9aa1b4" stroke-width="2"/>
+      <polygon points="320,130 305,110 335,110" fill="#171a23" stroke="#9aa1b4"/>
+      <line x1="320" y1="130" x2="520" y2="180" stroke="#9aa1b4" stroke-width="2"/>
+
+      <text x="320" y="150" text-anchor="middle" fill="#9aa1b4" font-size="10" font-family="sans-serif">öröklődés (extends)</text>
+    </svg>
+  </div>
+  <div class="note">A háromszög nyíl az <strong>öröklődést</strong> jelöli: az <code>Admin</code> és a <code>Vasarlo</code> osztály is a <code>Felhasznalo</code> osztályból származik.</div>
+</section>
+
+<!-- 9. GIT / GITHUB -->
+<section class="concept" id="c9">
+  <h2><span class="num">9.</span> Git és GitHub</h2>
+  <div class="explain">A <strong>Git</strong> egy verziókezelő rendszer, amivel nyomon követhetjük a kód változásait az idő során, és több fejlesztő is dolgozhat egyszerre ugyanazon a projekten. A <strong>GitHub</strong> egy felhő alapú platform, ahol a Git-repókat (repository = tárolót) tároljuk, megosztjuk és együttműködünk rajtuk.</div>
+  <table class="summary">
+    <tr><th>Fogalom</th><th>Jelentés</th></tr>
+    <tr><td>Repository (repo)</td><td>A projekt teljes kódját és történetét tartalmazó tároló</td></tr>
+    <tr><td>Commit</td><td>Egy "mentési pont" a kód állapotáról, üzenettel</td></tr>
+    <tr><td>Branch</td><td>Elágazás, amin önállóan lehet fejleszteni a fő kód érintése nélkül</td></tr>
+    <tr><td>Pull Request (PR)</td><td>Kérés, hogy egy branch változásait beolvasszák a fő ágba</td></tr>
+    <tr><td>Merge</td><td>Két branch összefésülése</td></tr>
+    <tr><td>Clone</td><td>Egy távoli repó letöltése helyi gépre</td></tr>
+  </table>
+  <div class="code-block">
+    <div class="code-label">Alap Git parancsok</div>
+    <pre><code>git clone https://github.com/felhasznalo/projekt.git
+git checkout -b uj-funkcio     # új branch létrehozása
+git add .                      # változások jelölése
+git commit -m "Bejelentkezés hozzáadva"
+git push origin uj-funkcio     # feltöltés GitHub-ra</code></pre>
+  </div>
+</section>
+
+<!-- 10. TRELLO -->
+<section class="concept" id="c10">
+  <h2><span class="num">10.</span> Trello / projektmenedzsment (Kanban)</h2>
+  <div class="explain">A <strong>Trello</strong> egy Kanban-alapú projektmenedzsment eszköz, ahol <strong>táblákon</strong> (board) belül <strong>listákkal</strong> (pl. "Teendő", "Folyamatban", "Kész") és <strong>kártyákkal</strong> (card = egy-egy feladat) szervezzük a munkát. Célja, hogy vizuálisan lássuk, hol tart a csapat/projekt.</div>
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg">
+      <rect x="15" y="15" width="175" height="190" rx="8" fill="#171a23" stroke="#f5a623"/>
+      <text x="102" y="40" text-anchor="middle" fill="#f5a623" font-size="12" font-weight="bold" font-family="sans-serif">TEENDŐ</text>
+      <rect x="28" y="55" width="150" height="30" rx="4" fill="#0b0d13" stroke="#262b3a"/>
+      <text x="103" y="74" text-anchor="middle" fill="#e6e8ef" font-size="10" font-family="sans-serif">Login form</text>
+      <rect x="28" y="95" width="150" height="30" rx="4" fill="#0b0d13" stroke="#262b3a"/>
+      <text x="103" y="114" text-anchor="middle" fill="#e6e8ef" font-size="10" font-family="sans-serif">Adatbázis terv</text>
+
+      <rect x="212" y="15" width="175" height="190" rx="8" fill="#171a23" stroke="#7c9eff"/>
+      <text x="299" y="40" text-anchor="middle" fill="#7c9eff" font-size="12" font-weight="bold" font-family="sans-serif">FOLYAMATBAN</text>
+      <rect x="225" y="55" width="150" height="30" rx="4" fill="#0b0d13" stroke="#262b3a"/>
+      <text x="300" y="74" text-anchor="middle" fill="#e6e8ef" font-size="10" font-family="sans-serif">API végpontok</text>
+
+      <rect x="410" y="15" width="175" height="190" rx="8" fill="#171a23" stroke="#6ee7b7"/>
+      <text x="497" y="40" text-anchor="middle" fill="#6ee7b7" font-size="12" font-weight="bold" font-family="sans-serif">KÉSZ</text>
+      <rect x="423" y="55" width="150" height="30" rx="4" fill="#0b0d13" stroke="#262b3a"/>
+      <text x="498" y="74" text-anchor="middle" fill="#e6e8ef" font-size="10" font-family="sans-serif">Wireframe</text>
+      <rect x="423" y="95" width="150" height="30" rx="4" fill="#0b0d13" stroke="#262b3a"/>
+      <text x="498" y="114" text-anchor="middle" fill="#e6e8ef" font-size="10" font-family="sans-serif">Projekt setup</text>
+    </svg>
+  </div>
+</section>
+
+<!-- 11. ENV -->
+<section class="concept" id="c11">
+  <h2><span class="num">11.</span> .env fájl (környezeti változók)</h2>
+  <div class="explain">Az <strong>.env</strong> fájl olyan érzékeny vagy környezetfüggő adatokat tárol (jelszavak, API kulcsok, adatbázis-elérési útvonalak, portszámok), amelyeket <strong>nem</strong> szabad közvetlenül a kódba írni vagy GitHub-ra feltölteni. A kód ezekhez az értékekhez a <code>process.env</code> objektumon keresztül fér hozzá.</div>
+  <div class="code-block">
+    <div class="code-label">.env fájl példa</div>
+    <pre><code>PORT=3000
+DATABASE_URL=mongodb://localhost:27017/projektAdatbazis
+JWT_SECRET=titkos_kulcs_ide
+API_KEY=abc123xyz</code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-label">Használata Node.js-ben (dotenv csomaggal)</div>
+    <pre><code>require("dotenv").config();
+
+const port = process.env.PORT;
+const dbUrl = process.env.DATABASE_URL;</code></pre>
+  </div>
+  <div class="warn">Fontos: az <code>.env</code> fájlt mindig fel kell venni a <code>.gitignore</code> fájlba, hogy véletlenül se kerüljön fel GitHub-ra! Helyette egy <code>.env.example</code> fájlt szokás megosztani, ami csak a kulcsneveket tartalmazza, értékek nélkül.</div>
+</section>
+
+<!-- 12. JÓ BACKEND LOGIKA -->
+<section class="concept" id="c12">
+  <h2><span class="num">12.</span> Jó backend logika alapelvei</h2>
+  <div class="explain">A backend nem csak "működnie" kell — <strong>átláthatónak, karbantarthatónak és biztonságosnak</strong> is kell lennie. Ehhez néhány bevált elvet érdemes követni.</div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="badge">1</div>
+      <div><strong>Rétegekre bontás (separation of concerns):</strong> ne írj mindent egy fájlba. Külön legyen a route (útvonal), a controller (a kérés feldolgozása), a service (üzleti logika) és a model (adatstruktúra/adatbázis-elérés) réteg.</div>
+    </div>
+    <div class="step">
+      <div class="badge">2</div>
+      <div><strong>Validáció:</strong> minden bejövő adatot ellenőrizni kell (típus, kötelező mezők, formátum), mielőtt feldolgoznánk vagy elmentenénk — soha ne bízz meg vakon a kliens oldali adatban.</div>
+    </div>
+    <div class="step">
+      <div class="badge">3</div>
+      <div><strong>Hibakezelés:</strong> minden aszinkron művelet (adatbázis-hívás, API-hívás) legyen <code>try/catch</code>-be csomagolva, és a hibákról érthető, de nem túl részletes választ küldjön a szerver (ne szivárogtass belső hibaüzeneteket a felhasználónak).</div>
+    </div>
+    <div class="step">
+      <div class="badge">4</div>
+      <div><strong>Biztonság:</strong> jelszavakat soha ne tárolj titkosítatlanul (hashelés, pl. bcrypt), használj környezeti változókat a titkos kulcsokhoz, védd az API végpontokat hitelesítéssel (authentication) és jogosultságkezeléssel (authorization).</div>
+    </div>
+    <div class="step">
+      <div class="badge">5</div>
+      <div><strong>Egyértelmű API-válaszok:</strong> konzisztens formátumban (pl. mindig <code>{ success, data, error }</code> struktúrában) és megfelelő HTTP státuszkódokkal (200, 201, 400, 404, 500) válaszolj.</div>
+    </div>
+    <div class="step">
+      <div class="badge">6</div>
+      <div><strong>Ne ismételd magad (DRY elv):</strong> ismétlődő logikát (pl. hitelesítés-ellenőrzés) szervezz middleware-ekbe vagy segédfüggvényekbe, hogy ne kelljen minden route-ban újraírni.</div>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">Réteges felépítés példa (route → controller → service → model)</div>
+    <pre><code>// routes/felhasznalo.js
+router.post("/regisztracio", felhasznaloController.regisztral);
+
+// controllers/felhasznaloController.js
+async function regisztral(req, res) {
+    try {
+        const ujFelhasznalo = await felhasznaloService.letrehoz(req.body);
+        res.status(201).json({ success: true, data: ujFelhasznalo });
+    } catch (err) {
+        res.status(400).json({ success: false, error: err.message });
+    }
+}
+
+// services/felhasznaloService.js
+async function letrehoz(adatok) {
+    validalAdatok(adatok);              // 1. validáció
+    const hashelt = await hashJelszo(adatok.jelszo); // 2. biztonság
+    return FelhasznaloModel.create({ ...adatok, jelszo: hashelt }); // 3. adatbázis
+}</code></pre>
+  </div>
+</section>
+
+<!-- ALJÁRA: FELÉPÍTÉSI ÁBRA -->
+<section class="concept" id="arch">
+  <h2>Projekt-felépítési ábra — mi hová kerül</h2>
+  <div class="explain">Egy tipikus Node.js/Express backend projekt mappastruktúrája, réteges felépítéssel. Ez mutatja, hogy melyik fájl milyen feladatot lát el, és hogyan kapcsolódnak egymáshoz.</div>
+
+  <div class="tree"><span class="folder">projekt/</span>
+├── <span class="folder">node_modules/</span>          <span class="comment"># telepített csomagok (nem kerül fel GitHub-ra)</span>
+├── <span class="folder">public/</span>                 <span class="comment"># statikus fájlok: képek, CSS, kliens oldali JS</span>
+│   ├── <span class="file">css/</span>
+│   ├── <span class="file">js/</span>
+│   └── <span class="file">images/</span>
+├── <span class="folder">views/</span>                  <span class="comment"># ha van szerver oldali renderelés (pl. EJS, Handlebars sablonok)</span>
+├── <span class="folder">routes/</span>                 <span class="comment"># útvonalak: melyik URL melyik controllert hívja</span>
+│   ├── <span class="file">felhasznaloRoutes.js</span>
+│   └── <span class="file">termekRoutes.js</span>
+├── <span class="folder">controllers/</span>            <span class="comment"># a kérés fogadása, válasz összeállítása</span>
+│   ├── <span class="file">felhasznaloController.js</span>
+│   └── <span class="file">termekController.js</span>
+├── <span class="folder">services/</span>               <span class="comment"># üzleti logika (a "mit és hogyan csinálunk")</span>
+│   └── <span class="file">felhasznaloService.js</span>
+├── <span class="folder">models/</span>                 <span class="comment"># adatstruktúrák, adatbázis-sémák (pl. Mongoose modellek)</span>
+│   ├── <span class="file">Felhasznalo.js</span>
+│   └── <span class="file">Termek.js</span>
+├── <span class="folder">middleware/</span>             <span class="comment"># pl. hitelesítés-ellenőrzés, hibakezelés, naplózás</span>
+│   ├── <span class="file">authMiddleware.js</span>
+│   └── <span class="file">errorHandler.js</span>
+├── <span class="folder">config/</span>                 <span class="comment"># beállítások (adatbázis-kapcsolat, konstansok)</span>
+│   └── <span class="file">db.js</span>
+├── <span class="env">.env</span>                       <span class="comment"># titkos környezeti változók — NEM kerül GitHub-ra!</span>
+├── <span class="file">.gitignore</span>                <span class="comment"># mit hagyjon ki a Git a verziókezelésből (pl. node_modules, .env)</span>
+├── <span class="file">package.json</span>              <span class="comment"># projekt adatai, függőségek, futtatási parancsok</span>
+├── <span class="file">README.md</span>                 <span class="comment"># projekt leírása, telepítési útmutató</span>
+└── <span class="file">server.js / app.js</span>         <span class="comment"># a szerver belépési pontja, itt indul el minden</span></div>
+
+  <div class="arch-legend">
+    <div class="arch-item"><code>routes/</code> — csak azt dönti el, melyik URL-hez melyik controller-függvény tartozik.</div>
+    <div class="arch-item"><code>controllers/</code> — fogadja a kérést, meghívja a megfelelő service-t, visszaküldi a választ.</div>
+    <div class="arch-item"><code>services/</code> — itt van az üzleti logika: számítások, validáció, döntések.</div>
+    <div class="arch-item"><code>models/</code> — leírja az adatbázis tábláinak/kollekcióinak szerkezetét.</div>
+    <div class="arch-item"><code>middleware/</code> — minden kérésen "áthalad", mielőtt a controllerhez érne (pl. bejelentkezés-ellenőrzés).</div>
+    <div class="arch-item"><code>config/</code> — központi hely a beállításoknak, pl. adatbázis-kapcsolódás.</div>
+    <div class="arch-item"><code>.env</code> — titkos adatok, sosem kerül fel nyilvános repóba.</div>
+    <div class="arch-item"><code>server.js</code> — az egész alkalmazás "kiindulópontja", ez indítja el a szervert.</div>
+  </div>
+
+  <div class="note">Ez a felépítés (routes → controllers → services → models) biztosítja, hogy a kód átlátható, tesztelhető és könnyen bővíthető maradjon, még akkor is, ha a projekt nagyra nő.</div>
+</section>
+
+</main>
+
+<footer>
+  Webfejlesztés alapfogalmai – Node.js, API, adatmodellezés és projektszervezés
+</footer>
+
+</body>
+</html>
